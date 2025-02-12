@@ -56,10 +56,10 @@ pytest -v
 
 view test coverage
 
-``sh
+```sh
 open htmlcov/index.html
 
-````
+```
 
 install `ollama` via the terminal
 for Mac OS use Homebrew
@@ -67,7 +67,7 @@ for Mac OS use Homebrew
 ```sh
 brew install ollama
 
-````
+```
 
 install a Large language model(LLM) e.g. `llama3.2` into your machine from [LLM's](https://ollama.com/)
 
