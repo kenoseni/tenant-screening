@@ -2,8 +2,7 @@
 
 ## Overview
 
-This project is an AI-driven prospective tenant screening system that evaluates search results (blacklist matches) using predefined criteria. The AI model assesses similarities in names, birth dates, nationality, ID numbers and the Exclusion Score
-returned from the search to determine the relevance of a blacklist match.
+This project is an AI-driven prospective tenant screening system that evaluates search results (blacklist matches) using predefined criteria. The AI model assesses similarities in names, birth dates, nationality, ID numbers and the Exclusion Score returned from the search to determine the relevance of a blacklist match.
 
 ## Architectural Diagram
 
