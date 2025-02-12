@@ -61,8 +61,7 @@ open htmlcov/index.html
 
 ```
 
-install `ollama` via the terminal
-for Mac OS use Homebrew
+install `ollama` via the terminal for example on Mac OS run
 
 ```sh
 brew install ollama
@@ -123,6 +122,12 @@ python main.py
     "classification": "Probably Not Relevant"
   }
 ]
+```
+
+the following responses can also be gotten if the provider does not match. This indicates that the results from this providers are not relevant
+
+```json
+[]
 ```
 
 - **Manual classification response**: If the AI is not available for any reason the manual result processing kicks in and evaluates the result, the following response is generated on the console with no `explanation` attribute:

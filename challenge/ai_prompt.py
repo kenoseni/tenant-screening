@@ -7,8 +7,8 @@ def ai_prompt(tenant: Tenant, blacklist_entry: BlacklistMatch):
     prompt = f"""
         You are an AI assistant specialized in prospective tenant screening trained to assess blacklist matches.
         Your task is to analyze the provided tenant details against a blacklist match and classify the match strictly.
-        if the Exclusion Score is greater or equal to 85, add 30 to the overall score
-        if the Exclusion Score is greater or equal to 70, add 15 to the overall score
+        if the Exclusion Score is greater or equal to 85, and name similarity is very high add 30 to the overall score
+        if the Exclusion Score is greater or equal to 70, and name similarity is very high add 15 to the overall score
 
         ## Tenant Information:
         - First Name: {tenant.first_name}

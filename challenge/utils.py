@@ -1,6 +1,7 @@
 import random
 import string
 from challenge.tenant import Tenant
+from challenge.black_list_match import BlacklistMatch
 
 
 def clean_string(value):
@@ -27,8 +28,18 @@ tenants = [
         nationality=random.choice(["USA", "UK", "Canada", "Germany", "MEX", None]),
         id_numbers=[random_id() for _ in range(random.randint(0, 3))]
     )
-    for _ in range(50)
+    for _ in range(3)
 ]
+
+blacklist = [
+    BlacklistMatch(
+        random.choice([t.first_name, random_name()]),
+        random.choice([t.last_name, random_name()]),
+        random.choice([t.birth_date, random_date(), None]),
+        random.choice([t.nationality, "Unknown"]),
+        f"Provider{random.randint(1, 5)}",
+        random.randint(30, 100)) for t in tenants
+] 
 
 pipeline = [
     {
