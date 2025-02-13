@@ -41,7 +41,7 @@ class ScreeningProcessor:
             try:
                 return datetime.strptime(date, fmt).strftime("%Y-%m-%d")
             except ValueError:
-                pass  # Try the next format
+                pass
 
         raise ValueError(f"Unknown date format: {date}")
 

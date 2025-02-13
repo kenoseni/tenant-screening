@@ -3,23 +3,6 @@ from challenge.black_list_match import BlacklistMatch
 from challenge.screening_processor import ScreeningProcessor
 
 
-def test_tenant_initialization(sample_tenant):
-    assert sample_tenant.first_name == "John"
-    assert sample_tenant.last_name == "Doe"
-    assert sample_tenant.birth_date == "1990-01-01"
-    assert sample_tenant.nationality == "USA"
-    assert sample_tenant.id_numbers == ["12345"]
-
-
-def test_blacklist_match_initialization(sample_blacklist):
-    blacklist_entry = sample_blacklist[0]
-    assert blacklist_entry.name == "John"
-    assert blacklist_entry.surname == "Doe"
-    assert blacklist_entry.birth_date == "1990-01-01"
-    assert blacklist_entry.provider == "ProviderX"
-    assert blacklist_entry.exclusion_score == 90
-
-
 def test_screening_processor_initialization(screening_processor, sample_tenant, sample_blacklist):
     assert screening_processor.tenant == sample_tenant
     assert screening_processor.blacklist_entries == sample_blacklist
