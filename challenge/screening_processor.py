@@ -9,21 +9,23 @@ from challenge.ai_prompt import ai_prompt
 from challenge.model import generate_model_response
 from challenge.utils import clean_string
 
+
 class ScreeningProcessor:
     """Pre-assessing the search result(blacklist entries) given the information a person provided(tenants information) to determine potential matches."""
 
-    def __init__(self, 
-                tenant: Tenant,
-                blacklist_entries: List[BlacklistMatch],
-                allowed_blacklist_sources: List[str] = None
-            ):
+    def __init__(
+        self,
+        tenant: Tenant,
+        blacklist_entries: List[BlacklistMatch],
+        allowed_blacklist_sources: List[str] = None,
+    ):
         self.tenant = tenant
         self.blacklist_entries = blacklist_entries
         self.allowed_blacklist_sources = allowed_blacklist_sources or []
 
     def __repr__(self):
         return f"ScreeningProcessor(tenant={self.tenant}, blacklist_entries={self.blacklist_entries}, allowed_blacklist_sources={self.allowed_blacklist_sources})"
-    
+
     def name_comparator(self, name1: str, name2: str) -> float:
         """Calculates the similarity between two names using SequenceMatcher"""
         return SequenceMatcher(None, clean_string(name1), clean_string(name2)).ratio()
@@ -33,10 +35,10 @@ class ScreeningProcessor:
 
         if not date:
             return ""
-        
+
         date = date.strip()
         date_formats = ["%d/%m/%Y", "%Y/%m/%d", "%d-%m-%Y", "%Y-%m-%d"]
-        
+
         for fmt in date_formats:
             try:
                 return datetime.strptime(date, fmt).strftime("%Y-%m-%d")
@@ -49,10 +51,18 @@ class ScreeningProcessor:
         """Evaluate the match confidence score based on multiple factors"""
         score = 0.0
 
-        tenant_names = re.split(r'\s+', clean_string(self.tenant.first_name)) + re.split(r'\s+', clean_string(self.tenant.last_name))
-        blacklist_names = re.split(r'\s+', clean_string(blacklist_entry.name)) + re.split(r'\s+', clean_string(blacklist_entry.surname))
+        tenant_names = re.split(
+            r"\s+", clean_string(self.tenant.first_name)
+        ) + re.split(r"\s+", clean_string(self.tenant.last_name))
+        blacklist_names = re.split(
+            r"\s+", clean_string(blacklist_entry.name)
+        ) + re.split(r"\s+", clean_string(blacklist_entry.surname))
 
-        name_match_score = max(self.name_comparator(tenant_name, blacklist_name) for tenant_name in tenant_names for blacklist_name in blacklist_names)
+        name_match_score = max(
+            self.name_comparator(tenant_name, blacklist_name)
+            for tenant_name in tenant_names
+            for blacklist_name in blacklist_names
+        )
 
         if name_match_score > 0.8:
             # High name similarity
@@ -62,10 +72,14 @@ class ScreeningProcessor:
             score += 20
 
         # Birth date match
-        if self.normalize_date(self.tenant.birth_date) == self.normalize_date(blacklist_entry.birth_date):
+        if self.normalize_date(self.tenant.birth_date) == self.normalize_date(
+            blacklist_entry.birth_date
+        ):
             score += 30
         # Nationality factor
-        if clean_string(self.tenant.nationality) == clean_string(blacklist_entry.birth_country):
+        if clean_string(self.tenant.nationality) == clean_string(
+            blacklist_entry.birth_country
+        ):
             score += 20
         # Exclusion match score from provider
         if blacklist_entry.exclusion_score >= 85:
@@ -73,11 +87,15 @@ class ScreeningProcessor:
         elif blacklist_entry.exclusion_score >= 70:
             score += 15
 
-        id_match_score = max(
-            SequenceMatcher(None, tenant_id, blacklist_id).ratio()
-            for tenant_id in self.tenant.id_numbers
-            for blacklist_id in blacklist_entry.identification_number
-        ) if self.tenant.id_numbers and blacklist_entry.identification_number else 0
+        id_match_score = (
+            max(
+                SequenceMatcher(None, tenant_id, blacklist_id).ratio()
+                for tenant_id in self.tenant.id_numbers
+                for blacklist_id in blacklist_entry.identification_number
+            )
+            if self.tenant.id_numbers and blacklist_entry.identification_number
+            else 0
+        )
 
         if id_match_score > 0.8:
             score += 30  # Strong match
@@ -85,7 +103,6 @@ class ScreeningProcessor:
             score += 15  # Moderate match
 
         return min(score, 100)
-
 
     def evaluate_with_ai(self, blacklist_entry: BlacklistMatch) -> Dict:
         """Uses an AI model to determine the likelihood of a true match"""
@@ -95,27 +112,36 @@ class ScreeningProcessor:
         response = generate_model_response(prompt)
 
         return response
-        
-
 
     def classify_matches(self, use_ai=True) -> List[Dict]:
         """Classification outcome per tenant entry based on evaluated score"""
         results = []
         for entry in self.blacklist_entries:
-            if self.allowed_blacklist_sources and entry.provider not in self.allowed_blacklist_sources:
-                    continue
+            if (
+                self.allowed_blacklist_sources
+                and entry.provider not in self.allowed_blacklist_sources
+            ):
+                continue
             if use_ai:
                 ai_assessment = self.evaluate_with_ai(entry) or {}
 
                 if ai_assessment.get("match_classification") != "Error":
-                    match_score = min(ai_assessment.get("ai_model_confidence_score", 0), 100)
-                    results.append({
-                        "name": entry.name,
-                        "surname": entry.surname,
-                        "match_score": match_score,
-                        "classification": ai_assessment.get("match_classification", "Probably Not Relevant"),
-                        "explanation": ai_assessment.get("explanation", "No explanation provided")
-                    })
+                    match_score = min(
+                        ai_assessment.get("ai_model_confidence_score", 0), 100
+                    )
+                    results.append(
+                        {
+                            "name": entry.name,
+                            "surname": entry.surname,
+                            "match_score": match_score,
+                            "classification": ai_assessment.get(
+                                "match_classification", "Probably Not Relevant"
+                            ),
+                            "explanation": ai_assessment.get(
+                                "explanation", "No explanation provided"
+                            ),
+                        }
+                    )
             else:
                 # Fallback mechanism without AI
                 match_score = self.evaluate_without_ai(entry)
@@ -124,17 +150,18 @@ class ScreeningProcessor:
                     classification = "Relevant Match"
                 elif match_score >= 65:
                     classification = "Needs Review"
-                
-                results.append({
-                    "name": entry.name,
-                    "surname": entry.surname,
-                    "match_score": match_score,
-                    "classification": classification
-                })
+
+                results.append(
+                    {
+                        "name": entry.name,
+                        "surname": entry.surname,
+                        "match_score": match_score,
+                        "classification": classification,
+                    }
+                )
 
         print(json.dumps(results, indent=4))
         return results
-
 
     @staticmethod
     def extract_blacklist_matches(pipeline: List[Dict]) -> List[BlacklistMatch]:
@@ -146,13 +173,15 @@ class ScreeningProcessor:
                 result = step.get("result", {}).get("data", {})
                 if result.get("found", False):
                     for match in result.get("matches", []):
-                        black_list_entries.append(BlacklistMatch(
-                            name=match.get("name", ""),
-                            surname=match.get("surname", ""),
-                            birth_date=match.get("birthDate"),
-                            birth_country=match.get("birthCountry", ""),
-                            provider=match.get("providerId", ""),
-                            exclusion_score=match.get("exclusionMatchScore", 0.0),
-                            id_numbers=match.get("idNumbers", [])
-                        ))
+                        black_list_entries.append(
+                            BlacklistMatch(
+                                name=match.get("name", ""),
+                                surname=match.get("surname", ""),
+                                birth_date=match.get("birthDate"),
+                                birth_country=match.get("birthCountry", ""),
+                                provider=match.get("providerId", ""),
+                                exclusion_score=match.get("exclusionMatchScore", 0.0),
+                                id_numbers=match.get("idNumbers", []),
+                            )
+                        )
         return black_list_entries

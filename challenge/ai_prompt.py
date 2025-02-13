@@ -1,6 +1,7 @@
 from challenge.tenant import Tenant
 from challenge.black_list_match import BlacklistMatch
 
+
 def ai_prompt(tenant: Tenant, blacklist_entry: BlacklistMatch):
     """Returns the prompt for a given tenant and blacklist entry"""
 
@@ -42,7 +43,7 @@ def ai_prompt(tenant: Tenant, blacklist_entry: BlacklistMatch):
         }}
         ```
         Do not include any text before or after the JSON response.
-        Relevant Match means match_score is greater or equal 85
+        Relevant Match means match_score is greater or equal to 85
         Probably Not Relevant means match_score is less than 65
         Needs Review means match_score is less than 85 but greater or equals to 65
         Invalid Source means wrong provider in blacklist match information
