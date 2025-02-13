@@ -73,16 +73,16 @@ class ScreeningProcessor:
         elif blacklist_entry.exclusion_score >= 70:
             score += 15
 
-        # id_match_score = max(
-        #     SequenceMatcher(None, tenant_id, blacklist_id).ratio()
-        #     for tenant_id in self.tenant.id_numbers
-        #     for blacklist_id in blacklist_entry.id_numbers
-        # ) if self.tenant.id_numbers and blacklist_entry.id_numbers else 0
+        id_match_score = max(
+            SequenceMatcher(None, tenant_id, blacklist_id).ratio()
+            for tenant_id in self.tenant.id_numbers
+            for blacklist_id in blacklist_entry.identification_number
+        ) if self.tenant.id_numbers and blacklist_entry.identification_number else 0
 
-        # if id_match_score > 0.8:
-        #     score += 30  # Strong match
-        # elif id_match_score > 0.6:
-        #     score += 15  # Moderate match
+        if id_match_score > 0.8:
+            score += 30  # Strong match
+        elif id_match_score > 0.6:
+            score += 15  # Moderate match
 
         return min(score, 100)
 
@@ -98,23 +98,24 @@ class ScreeningProcessor:
         
 
 
-    def classify_matches(self) -> List[Dict]:
+    def classify_matches(self, use_ai=True) -> List[Dict]:
         """Classification outcome per tenant entry based on evaluated score"""
         results = []
         for entry in self.blacklist_entries:
             if self.allowed_blacklist_sources and entry.provider not in self.allowed_blacklist_sources:
                     continue
-            ai_assessment = self.evaluate_with_ai(entry) or {}
+            if use_ai:
+                ai_assessment = self.evaluate_with_ai(entry) or {}
 
-            if ai_assessment.get("match_classification") != "Error":
-                match_score = min(ai_assessment.get("ai_model_confidence_score", 0), 100)
-                results.append({
-                    "name": entry.name,
-                    "surname": entry.surname,
-                    "match_score": match_score,
-                    "classification": ai_assessment.get("match_classification", "Needs Review"),
-                    "explanation": ai_assessment.get("explanation", "No explanation provided")
-                })
+                if ai_assessment.get("match_classification") != "Error":
+                    match_score = min(ai_assessment.get("ai_model_confidence_score", 0), 100)
+                    results.append({
+                        "name": entry.name,
+                        "surname": entry.surname,
+                        "match_score": match_score,
+                        "classification": ai_assessment.get("match_classification", "Probably Not Relevant"),
+                        "explanation": ai_assessment.get("explanation", "No explanation provided")
+                    })
             else:
                 # Fallback mechanism without AI
                 match_score = self.evaluate_without_ai(entry)

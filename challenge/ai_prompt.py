@@ -24,12 +24,14 @@ def ai_prompt(tenant: Tenant, blacklist_entry: BlacklistMatch):
         - Birth Country: {blacklist_entry.birth_country}
         - Provider: {blacklist_entry.provider}
         - Exclusion Score: {blacklist_entry.exclusion_score}
+        - Identification Numbers: {blacklist_entry.identification_number}
 
         ## Evaluation Criteria:
         - Name Similarity
         - Birth Date Match
         - Nationality/Birth Country Match
         - Exclusion Score
+        - Identification Numbers Match
 
         ## Expected Output:
         Respond **only** with a valid JSON object, strictly formatted as follows:

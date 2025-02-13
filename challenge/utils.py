@@ -38,7 +38,9 @@ blacklist = [
         random.choice([t.birth_date, random_date(), None]),
         random.choice([t.nationality, "Unknown"]),
         f"Provider{random.randint(1, 5)}",
-        random.randint(30, 100)) for t in tenants
+        random.randint(30, 100),
+        random.choice([t.id_numbers, [random_id() for _ in range(random.randint(0, 3))]])
+    ) for t in tenants
 ] 
 
 pipeline = [
