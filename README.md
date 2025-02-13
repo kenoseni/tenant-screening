@@ -95,6 +95,12 @@ python main.py
 
 ```
 
+to test without using the LLM model(manual classification) pass False to the classify_matches method in `main.py`
+
+```python
+screening_processor.classify_matches(False)
+```
+
 ## Response
 
 - **AI classification response**: If the AI is available and evaluates the result, the following response is generated on the console with an `explanation` attribute:
