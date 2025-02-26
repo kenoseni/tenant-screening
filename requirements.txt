@@ -8,3 +8,4 @@ pytest-cov==6.0.0
 pytest-mock==3.14.0
 wheel==0.45.1
 twine==6.1.0
+openai==1.64.0

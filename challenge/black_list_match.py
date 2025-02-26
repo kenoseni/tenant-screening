@@ -18,9 +18,9 @@ class BlacklistMatch:
         self.surname = surname
         self.birth_date = birth_date or ""
         self.birth_country = birth_country or "Unknown"
-        self.provider = provider
+        self.provider = provider or ""
         self.exclusion_score = exclusion_score or 0.0
         self.identification_number = identification_number or []
 
     def __repr__(self):
-        return f"BlacklistMatch(name={self.name}, surname={self.surname}, birth_date={self.birth_date}, birth_country={self.birth_country}, provider={self.provider}, exclusion_score={self.exclusion_score})"
+        return f"BlacklistMatch(name={self.name}, surname={self.surname}, birth_date={self.birth_date}, birth_country={self.birth_country}, provider={self.provider}, exclusion_score={self.exclusion_score}, identification_number={self.identification_number})"

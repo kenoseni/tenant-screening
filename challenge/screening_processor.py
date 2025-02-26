@@ -6,14 +6,18 @@ from typing import List, Dict
 from challenge.tenant import Tenant
 from challenge.black_list_match import BlacklistMatch
 from challenge.ai_prompt import ai_prompt
-from challenge.model import generate_model_response
+from challenge.model import (
+    generate_model_response,
+    generate_model_response_with_open_ai,
+)
 from challenge.utils import clean_string
 
 # Constants
-FIFTEEN = 15
-TWENTY = 20
-THIRTY = 30
-FORTY = 40
+INITIAL_SCORE = 0.0
+FIFTEEN = 15.0
+TWENTY = 20.0
+THIRTY = 30.0
+FORTY = 40.0
 
 
 class ScreeningProcessor:
@@ -55,7 +59,7 @@ class ScreeningProcessor:
 
     def evaluate_without_ai(self, blacklist_entry: BlacklistMatch) -> float:
         """Evaluate the match confidence score based on multiple factors"""
-        score = 0.0
+        score = INITIAL_SCORE
 
         tenant_names = re.split(
             r"\s+", clean_string(self.tenant.first_name)
@@ -70,27 +74,32 @@ class ScreeningProcessor:
             for blacklist_name in blacklist_names
         )
 
-        if name_match_score > 0.8:
+        # Name similarity
+        if name_match_score > 0.9:
             # High name similarity
-            score += FORTY
-        elif name_match_score > 0.6:
+            score += THIRTY
+        elif name_match_score > 0.7:
             # Medium name similarity
-            score += TWENTY
+            score += FIFTEEN
 
         # Birth date match
-        if self.normalize_date(self.tenant.birth_date) == self.normalize_date(
-            blacklist_entry.birth_date
+        if (
+            self.tenant.birth_date
+            and blacklist_entry.birth_date
+            and self.normalize_date(self.tenant.birth_date)
+            == self.normalize_date(blacklist_entry.birth_date)
         ):
-            score += THIRTY
+            score += FORTY
+
         # Nationality factor
         if clean_string(self.tenant.nationality) == clean_string(
             blacklist_entry.birth_country
         ):
             score += TWENTY
         # Exclusion match score from provider
-        if blacklist_entry.exclusion_score >= 85:
+        if blacklist_entry.exclusion_score >= 85.0:
             score += THIRTY
-        elif blacklist_entry.exclusion_score >= 70:
+        elif blacklist_entry.exclusion_score >= 70.0:
             score += FIFTEEN
 
         id_match_score = (
@@ -108,14 +117,21 @@ class ScreeningProcessor:
         elif id_match_score > 0.6:
             score += FIFTEEN  # Moderate match
 
-        return min(score, 100)
+        return min(score, 100.0)
 
-    def evaluate_with_ai(self, blacklist_entry: BlacklistMatch) -> Dict:
-        """Uses an AI model to determine the likelihood of a true match"""
+    def evaluate_with_ai(
+        self, blacklist_entry: BlacklistMatch, use_chat_gpt=True
+    ) -> Dict:
+        """Uses an AI model to determine the likelihood of a true match, the default model is CHAT_GPT"""
 
         prompt = ai_prompt(self.tenant, blacklist_entry)
 
-        response = generate_model_response(prompt)
+        if use_chat_gpt:
+            response = generate_model_response_with_open_ai(prompt)
+
+            print("?????????????????????????????", response)
+        else:
+            response = generate_model_response(prompt)
 
         return response
 
@@ -130,10 +146,9 @@ class ScreeningProcessor:
                 continue
             if use_ai:
                 ai_assessment = self.evaluate_with_ai(entry) or {}
-
                 if ai_assessment.get("match_classification") != "Error":
                     match_score = min(
-                        ai_assessment.get("ai_model_confidence_score", 0), 100
+                        ai_assessment.get("ai_model_confidence_score", 0), 100.0
                     )
                     results.append(
                         {
@@ -152,9 +167,9 @@ class ScreeningProcessor:
                 # Fallback mechanism without AI
                 match_score = self.evaluate_without_ai(entry)
                 classification = "Probably Not Relevant"
-                if match_score >= 85:
+                if match_score >= 85.0:
                     classification = "Relevant Match"
-                elif match_score >= 65:
+                elif match_score >= 65.0:
                     classification = "Needs Review"
 
                 results.append(
@@ -173,21 +188,33 @@ class ScreeningProcessor:
     def extract_blacklist_matches(pipeline: List[Dict]) -> List[BlacklistMatch]:
         """Extract blacklist matches from the pipeline step dynamically"""
 
-        black_list_entries = []
+        blacklist_entries = []
         for step in pipeline:
             if step.get("type", "").endswith("blacklist"):
                 result = step.get("result", {}).get("data", {})
                 if result.get("found", False):
                     for match in result.get("matches", []):
-                        black_list_entries.append(
+                        blacklist_entries.append(
                             BlacklistMatch(
                                 name=match.get("name", ""),
                                 surname=match.get("surname", ""),
                                 birth_date=match.get("birthDate"),
                                 birth_country=match.get("birthCountry", ""),
                                 provider=match.get("providerId", ""),
-                                exclusion_score=match.get("exclusionMatchScore", 0.0),
-                                id_numbers=match.get("idNumbers", []),
+                                exclusion_score=match.get("exclusionMatchScore", 0),
+                                identification_number=match.get(
+                                    "identificationNumber", []
+                                ),
                             )
                         )
-        return black_list_entries
+        return blacklist_entries
+
+    @classmethod
+    def from_pipeline(
+        cls,
+        tenant: Tenant,
+        pipeline: List[Dict],
+        allowed_blacklist_sources: List[str] = None,
+    ):
+        blacklist_entries = cls.extract_blacklist_matches(pipeline)
+        return cls(tenant, blacklist_entries, allowed_blacklist_sources)
