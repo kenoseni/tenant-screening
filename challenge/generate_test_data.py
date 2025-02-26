@@ -36,7 +36,7 @@ def generate_pipeline():
                                 "birthCountry": random.choice(
                                     [t.nationality, "Unknown"]
                                 ),
-                                "providerId": f"Provider{random.randint(1, 5)}",
+                                "providerId": f"Provider{random.randint(1, 5)}-blacklist",
                                 "exclusionMatchScore": random.randint(30.0, 100.0),
                                 "identificationNumber": random.choice(
                                     [
@@ -65,5 +65,3 @@ def generate_pipeline():
 pipeline = generate_pipeline()
 
 blacklist = ScreeningProcessor.extract_blacklist_matches(pipeline)
-
-print("+++++++++++++++=======", blacklist)

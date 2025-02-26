@@ -30,7 +30,7 @@ def sample_tenant():
 def sample_pipeline():
     return [
         {
-            "type": "providerX_blacklist",
+            "type": "providerX-blacklist",
             "result": {
                 "data": {
                     "found": True,
@@ -58,7 +58,7 @@ def sample_pipeline():
             },
         },
         {
-            "type": "providerY_blacklist",
+            "type": "providerY-blacklist",
             "result": {
                 "data": {
                     "found": True,

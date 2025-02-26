@@ -128,8 +128,6 @@ class ScreeningProcessor:
 
         if use_chat_gpt:
             response = generate_model_response_with_open_ai(prompt)
-
-            print("?????????????????????????????", response)
         else:
             response = generate_model_response(prompt)
 
@@ -139,13 +137,12 @@ class ScreeningProcessor:
         """Classification outcome per tenant entry based on evaluated score"""
         results = []
 
-        
         for entry in self.blacklist_entries:
-            # if (
-            #     self.allowed_blacklist_sources
-            #     and entry.provider not in self.allowed_blacklist_sources
-            # ):
-            #     continue
+            if (
+                self.allowed_blacklist_sources
+                and entry.provider not in self.allowed_blacklist_sources
+            ):
+                continue
             if use_ai:
                 ai_assessment = self.evaluate_with_ai(entry) or {}
                 if ai_assessment.get("match_classification") != "Error":
