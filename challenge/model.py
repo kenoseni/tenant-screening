@@ -10,7 +10,6 @@ config = dotenv_values(env_path)
 
 
 api_key = config.get("OPENAI_API_KEY")
-print("!!!!!!!!!!!!!!!!!!!!", api_key)
 client = OpenAI(api_key=api_key)
 
 
@@ -86,7 +85,7 @@ def generate_model_response_with_open_ai(prompt: str):
 
         ai_content = completion.choices[0].message.content
 
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", ai_content)
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>RESPONSE FROM CHAT GPT", ai_content)
 
         if ai_content:
             try:

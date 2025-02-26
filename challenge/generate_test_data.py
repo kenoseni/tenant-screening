@@ -64,6 +64,6 @@ def generate_pipeline():
 
 pipeline = generate_pipeline()
 
-print("+++++++++++++++=======", pipeline)
-
 blacklist = ScreeningProcessor.extract_blacklist_matches(pipeline)
+
+print("+++++++++++++++=======", blacklist)
