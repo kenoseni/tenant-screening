@@ -74,5 +74,5 @@ def screening_processor(sample_tenant, sample_blacklist):
     return ScreeningProcessor(
         sample_tenant,
         sample_blacklist,
-        allowed_blacklist_sources=["ProviderX_blacklist", "ProviderY_blacklist"],
+        allowed_blacklist_sources=["ProviderX-blacklist", "ProviderY-blacklist"],
     )
