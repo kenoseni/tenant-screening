@@ -110,6 +110,10 @@ to test without using the LLM model(manual classification) pass False to the cla
 screening_processor.classify_matches(False)
 ```
 
+## Input Data For Testing
+
+Any test data can be used to test this application. The `tenant` data and `pipeline` data in the `generate_test_data` file can can be substituted with any other test data
+
 ## Response
 
 - **AI classification response**: If the AI is available and evaluates the result, the following response is generated on the console with an `explanation` attribute:
