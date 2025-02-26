@@ -61,7 +61,20 @@ open htmlcov/index.html
 
 ```
 
-install `ollama` via the terminal for example on Mac OS run
+## Configuration
+
+create a `.env` file using the `.env.sample`
+
+## Model
+
+To use CHAT-GPT, add your `api_key` and specify a model in your `.env` file
+
+```sh
+OPENAI_API_KEY=<ADD YOUR API KEY>
+OPENAI_MODEL=gpt-4o-mini
+```
+
+To use other models install `ollama` via the terminal for example on Mac OS run
 
 ```sh
 brew install ollama
@@ -81,10 +94,6 @@ confirm you have the LLM installed by running
 ollama list
 
 ```
-
-## Configuration
-
-create a `.env` file using the `.env.sample`
 
 ## Manual Testing
 
