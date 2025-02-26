@@ -9,6 +9,12 @@ from challenge.ai_prompt import ai_prompt
 from challenge.model import generate_model_response
 from challenge.utils import clean_string
 
+# Constants
+FIFTEEN = 15
+TWENTY = 20
+THIRTY = 30
+FORTY = 40
+
 
 class ScreeningProcessor:
     """Pre-assessing the search result(blacklist entries) given the information a person provided(tenants information) to determine potential matches."""
@@ -43,7 +49,7 @@ class ScreeningProcessor:
             try:
                 return datetime.strptime(date, fmt).strftime("%Y-%m-%d")
             except ValueError:
-                pass
+                continue
 
         raise ValueError(f"Unknown date format: {date}")
 
@@ -66,26 +72,26 @@ class ScreeningProcessor:
 
         if name_match_score > 0.8:
             # High name similarity
-            score += 40
+            score += FORTY
         elif name_match_score > 0.6:
             # Medium name similarity
-            score += 20
+            score += TWENTY
 
         # Birth date match
         if self.normalize_date(self.tenant.birth_date) == self.normalize_date(
             blacklist_entry.birth_date
         ):
-            score += 30
+            score += THIRTY
         # Nationality factor
         if clean_string(self.tenant.nationality) == clean_string(
             blacklist_entry.birth_country
         ):
-            score += 20
+            score += TWENTY
         # Exclusion match score from provider
         if blacklist_entry.exclusion_score >= 85:
-            score += 30
+            score += THIRTY
         elif blacklist_entry.exclusion_score >= 70:
-            score += 15
+            score += FIFTEEN
 
         id_match_score = (
             max(
@@ -98,9 +104,9 @@ class ScreeningProcessor:
         )
 
         if id_match_score > 0.8:
-            score += 30  # Strong match
+            score += THIRTY  # Strong match
         elif id_match_score > 0.6:
-            score += 15  # Moderate match
+            score += FIFTEEN  # Moderate match
 
         return min(score, 100)
 

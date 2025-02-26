@@ -20,4 +20,4 @@ if __name__ == "__main__":
             ],
         )
         # Pass False to use manual algorithm
-        screening_processor.classify_matches(True)
+        screening_processor.classify_matches()
