@@ -9,8 +9,8 @@ def test_screening_processor_initialization(
     assert screening_processor.tenant == sample_tenant
     assert screening_processor.blacklist_entries == sample_blacklist
     assert screening_processor.allowed_blacklist_sources == [
-        "ProviderX_blacklist",
-        "ProviderY_blacklist",
+        "ProviderX-blacklist",
+        "ProviderY-blacklist",
     ]
 
     assert isinstance(screening_processor, ScreeningProcessor)  # Verify object type
