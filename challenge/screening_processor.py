@@ -60,7 +60,7 @@ class ScreeningProcessor:
     def evaluate_without_ai(self, blacklist_entry: BlacklistMatch) -> float:
         """Evaluate the match confidence score based on multiple factors"""
         score = INITIAL_SCORE
-
+        print("**********************", self.tenant.first_name)
         tenant_names = re.split(
             r"\s+", clean_string(self.tenant.first_name)
         ) + re.split(r"\s+", clean_string(self.tenant.last_name))
@@ -138,12 +138,14 @@ class ScreeningProcessor:
     def classify_matches(self, use_ai=True) -> List[Dict]:
         """Classification outcome per tenant entry based on evaluated score"""
         results = []
+
+        
         for entry in self.blacklist_entries:
-            if (
-                self.allowed_blacklist_sources
-                and entry.provider not in self.allowed_blacklist_sources
-            ):
-                continue
+            # if (
+            #     self.allowed_blacklist_sources
+            #     and entry.provider not in self.allowed_blacklist_sources
+            # ):
+            #     continue
             if use_ai:
                 ai_assessment = self.evaluate_with_ai(entry) or {}
                 if ai_assessment.get("match_classification") != "Error":
