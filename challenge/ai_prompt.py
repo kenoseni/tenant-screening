@@ -55,7 +55,7 @@ def ai_prompt(tenant: Tenant, blacklist_entry: BlacklistMatch):
         ## Classification Guidelines:
         **'Relevant Match'**: match_score >= {SCORE_THRESHOLD_RELEVANT}
         **'Needs Review'**: match_score >= {SCORE_THRESHOLD_REVIEW} and < {SCORE_THRESHOLD_RELEVANT}
-        **'Probably Not Relevant'**: score < {SCORE_THRESHOLD_REVIEW}
+        **'Probably Not Relevant'**: match_score < {SCORE_THRESHOLD_REVIEW}
         **'Invalid Source'**: if the provider is incorrect
 
         Ensure your explanation details which criteria matched or did not, providing a balanced assessment beyond just name similarity.
