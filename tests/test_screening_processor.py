@@ -55,7 +55,9 @@ def test_different_name_same_id(sample_tenant):
 
 def test_missing_fields():
     tenant = Tenant("John", "Doe", None, None, [])
-    blacklist = BlacklistMatch("John", "Doe", "1990-01-01", None, "Provider1-blacklist", 50.0, [])
+    blacklist = BlacklistMatch(
+        "John", "Doe", "1990-01-01", None, "Provider1-blacklist", 50.0, []
+    )
     processor = ScreeningProcessor(tenant, [blacklist])
     assert processor.evaluate_without_ai(blacklist) >= 50.0
 
@@ -141,7 +143,9 @@ def test_empty_blacklist_entries(sample_tenant):
 
 
 def test_missing_birth_date(sample_tenant):
-    blacklist = BlacklistMatch("John", "Doe", None, "USA", "Provider1-blacklist", 75.0, ["12445"])
+    blacklist = BlacklistMatch(
+        "John", "Doe", None, "USA", "Provider1-blacklist", 75.0, ["12445"]
+    )
     processor = ScreeningProcessor(sample_tenant, [blacklist])
     assert processor.evaluate_without_ai(blacklist) > 50.0
 

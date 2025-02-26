@@ -1,17 +1,17 @@
 from challenge.screening_processor import ScreeningProcessor
-from challenge.generate_test_data import tenants
-from challenge.generate_test_data import blacklist
+from challenge.generate_test_data import tenants, pipeline
+from challenge.utils import print_tenants, print_pipeline_results
 
-print("Input for Prospective Tenants:", tenants)
+print_tenants(tenants)
 
-print("Search Result from Third-Party:", blacklist)
+print_pipeline_results(pipeline)
 
 
 if __name__ == "__main__":
     for tenant in tenants:
-        screening_processor = ScreeningProcessor(
+        screening_processor = ScreeningProcessor.from_pipeline(
             tenant,
-            blacklist,
+            pipeline,
             allowed_blacklist_sources=[
                 "Provider1-blacklist",
                 "Provider2-blacklist",

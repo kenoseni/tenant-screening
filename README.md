@@ -118,11 +118,49 @@ Any test data can be used to test this application. The `tenant` data and `pipel
 
 - **AI classification response**: If the AI is available and evaluates the result, the following response is generated on the console with an `explanation` attribute:
 
+```sh
+=====================================
+Prospective Tenants:
+=====================================
+- Tenant 1: first_name=sWyUQC, last_name=DYLfYOx, birth_date=1970-09-26, nationality=UK, id_numbers=['668811']
+- Tenant 2: first_name=pChDCt, last_name=grqesNg, birth_date=, nationality=Germany, id_numbers=['126489', '880870']
+- Tenant 3: first_name=dshZGj, last_name=QTue, birth_date=, nationality=Germany, id_numbers=['725480', '216011']
+=====================================
+Pipeline Results:
+=====================================
+- Step 1: Type=provider1_blacklist, Matches Found=3
+- Step 2: Type=provider3_blacklist, Matches Found=2
+- Step 3: Type=provider5_blacklist, Matches Found=0
+=====================================
+Blacklist Entries Generated from Pipeline:
+=====================================
+- Entry 1: name=jsrVf, surname=DYLfYOx, birth_date=1970-09-26, birth_country=UK, provider=Provider5-blacklist, exclusion_score=30, identification_number=['659545']
+- Entry 2: name=sWyUQC, surname=fOR, birth_date=1998-10-13, birth_country=Unknown, provider=Provider3-blacklist, exclusion_score=36, identification_number=['668811']
+- Entry 3: name=sWyUQC, surname=NMs, birth_date=1977-09-21, birth_country=Unknown, provider=Provider2-blacklist, exclusion_score=75, identification_number=[]
+- Entry 4: name=pChDCt, surname=grqesNg, birth_date=, birth_country=Germany, provider=Provider3-blacklist, exclusion_score=54, identification_number=['126489', '880870']
+- Entry 5: name=NIdTDRlR, surname=cGDSFyhRJ, birth_date=, birth_country=Unknown, provider=Provider1-blacklist, exclusion_score=62, identification_number=['248270', '801149', '971972']
+================================================================================================================================================
+Screening Results for Tenant first_name: sWyUQC last_name: DYLfYOx dob: 1970-09-26 id_numbers: ['668811'] birth_country: UK:
+==================================================================================================================================================
+- Name: jsrVf, Surname: DYLfYOx, DoB: 1970-09-26, ID_Numbers: ['659545'], Birth_Country: UK, Match Score: 80, Classification: Relevant Match
+- Name: sWyUQC, Surname: fOR, DoB: 1998-10-13, ID_Numbers: ['668811'], Birth_Country: Unknown, Match Score: 60, Classification: Probably Not Relevant
+- Name: sWyUQC, Surname: NMs, DoB: 1977-09-21, ID_Numbers: [], Birth_Country: Unknown, Match Score: 75, Classification: Probably Not Relevant
+- Name: pChDCt, Surname: grqesNg, DoB: , ID_Numbers: ['126489', '880870'], Birth_Country: Germany, Match Score: 67, Classification: Needs Review
+- Name: NIdTDRlR, Surname: cGDSFyhRJ, DoB: , ID_Numbers: ['248270', '801149', '971972'], Birth_Country: Unknown, Match Score: 74, Classification: Needs Review
+```
+
+`OR`
+
 ```json
 [
   {
     "name": "John",
     "surname": "Doe",
+    "date_of_birth": "",
+    "birth_country": "",
+    "exclusion_score": "",
+    "identification_number": "",
+    "provider": "",
     "match_score": 95,
     "classification": "Relevant Match",
     "explanation": "High Exclusion Score (90) matches exact details, and no significant discrepancies in other criteria"
@@ -130,6 +168,11 @@ Any test data can be used to test this application. The `tenant` data and `pipel
   {
     "name": "Johnny",
     "surname": "Doe",
+    "date_of_birth": "",
+    "birth_country": "",
+    "exclusion_score": "",
+    "identification_number": "",
+    "provider": "",
     "match_score": 50,
     "classification": "Probably Not Relevant",
     "explanation": "Birth Date: No match, Exclusion Score: Low (50)"
@@ -137,6 +180,11 @@ Any test data can be used to test this application. The `tenant` data and `pipel
   {
     "name": "Jane",
     "surname": "Smith",
+    "date_of_birth": "",
+    "birth_country": "",
+    "exclusion_score": "",
+    "identification_number": "",
+    "provider": "",
     "match_score": 15.0,
     "classification": "Probably Not Relevant"
   }
@@ -151,17 +199,66 @@ the following responses can also be gotten if the provider does not match. This 
 
 - **Manual classification response**: If the AI is not available for any reason the manual result processing kicks in and evaluates the result, the following response is generated on the console with no `explanation` attribute:
 
+```sh
+=====================================
+Prospective Tenants:
+=====================================
+- Tenant 1: first_name=jRDsk, last_name=smfbdCDteo, birth_date=2010-10-06, nationality=USA, id_numbers=[]
+- Tenant 2: first_name=gLtf, last_name=KGq, birth_date=, nationality=MEX, id_numbers=['209095', '032176', '801937']
+- Tenant 3: first_name=spXoyLtR, last_name=JUzIrnCuIZ, birth_date=, nationality=MEX, id_numbers=[]
+=====================================
+Pipeline Results:
+=====================================
+- Step 1: Type=provider2_blacklist, Matches Found=3
+- Step 2: Type=provider5_blacklist, Matches Found=2
+- Step 3: Type=provider3_blacklist, Matches Found=3
+=====================================
+Blacklist Entries Generated from Pipeline:
+=====================================
+- Entry 1: name=KxBPWdJP, surname=JgHYz, birth_date=, birth_country=Unknown, provider=Provider1-blacklist, exclusion_score=74, identification_number=['837300']
+- Entry 2: name=jRDsk, surname=smfbdCDteo, birth_date=, birth_country=USA, provider=Provider5-blacklist, exclusion_score=32, identification_number=[]
+- Entry 3: name=gnvP, surname=oRe, birth_date=, birth_country=USA, provider=Provider3-blacklist, exclusion_score=54, identification_number=['517345']
+- Entry 4: name=VjQPkqq, surname=SJYlCwj, birth_date=, birth_country=MEX, provider=Provider5-blacklist, exclusion_score=80, identification_number=['209095', '032176', '801937']
+- Entry 5: name=gLtf, surname=gKVbA, birth_date=, birth_country=MEX, provider=Provider2-blacklist, exclusion_score=83, identification_number=['209095', '032176', '801937']
+- Entry 6: name=zLsn, surname=VBGDtlWkF, birth_date=1959-06-03, birth_country=Unknown, provider=Provider2-blacklist, exclusion_score=71, identification_number=[]
+- Entry 7: name=spXoyLtR, surname=zRlMQeB, birth_date=, birth_country=Unknown, provider=Provider1-blacklist, exclusion_score=63, identification_number=['871622']
+- Entry 8: name=EmklhyM, surname=MtevoY, birth_date=, birth_country=Unknown, provider=Provider4-blacklist, exclusion_score=46, identification_number=[]
+================================================================================================================================================
+Screening Results for Tenant first_name: jRDsk last_name: smfbdCDteo dob: 2010-10-06 id_numbers: [] birth_country: USA:
+==================================================================================================================================================
+- Name: KxBPWdJP, Surname: JgHYz, DoB: , ID_Numbers: ['837300'], Birth_Country: Unknown, Match Score: 15.0, Classification: Probably Not Relevant
+- Name: jRDsk, Surname: smfbdCDteo, DoB: , ID_Numbers: [], Birth_Country: USA, Match Score: 50.0, Classification: Probably Not Relevant
+- Name: gnvP, Surname: oRe, DoB: , ID_Numbers: ['517345'], Birth_Country: USA, Match Score: 20.0, Classification: Probably Not Relevant
+- Name: VjQPkqq, Surname: SJYlCwj, DoB: , ID_Numbers: ['209095', '032176', '801937'], Birth_Country: MEX, Match Score: 15.0, Classification: Probably Not Relevant
+- Name: gLtf, Surname: gKVbA, DoB: , ID_Numbers: ['209095', '032176', '801937'], Birth_Country: MEX, Match Score: 15.0, Classification: Probably Not Relevant
+- Name: zLsn, Surname: VBGDtlWkF, DoB: 1959-06-03, ID_Numbers: [], Birth_Country: Unknown, Match Score: 15.0, Classification: Probably Not Relevant
+- Name: spXoyLtR, Surname: zRlMQeB, DoB: , ID_Numbers: ['871622'], Birth_Country: Unknown, Match Score: 0.0, Classification: Probably Not Relevant
+- Name: EmklhyM, Surname: MtevoY, DoB: , ID_Numbers: [], Birth_Country: Unknown, Match Score: 0.0, Classification: Probably Not Relevant
+```
+
+`OR`
+
 ```json
 [
   {
     "name": "Jane",
     "surname": "Smith",
+    "date_of_birth": "",
+    "birth_country": "",
+    "exclusion_score": "",
+    "identification_number": "",
+    "provider": "",
     "match_score": 15.0,
     "classification": "Probably Not Relevant"
   },
   {
     "name": "Kimberly",
     "surname": "Jordan",
+    "date_of_birth": "",
+    "birth_country": "",
+    "exclusion_score": "",
+    "identification_number": "",
+    "provider": "",
     "match_score": 95.0,
     "classification": "Relevant Match"
   }

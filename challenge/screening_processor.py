@@ -10,7 +10,7 @@ from challenge.model import (
     generate_model_response,
     generate_model_response_with_open_ai,
 )
-from challenge.utils import clean_string
+from challenge.utils import clean_string, print_screening_results, print_blacklist_entries
 
 # Constants
 INITIAL_SCORE = 0.0
@@ -60,7 +60,7 @@ class ScreeningProcessor:
     def evaluate_without_ai(self, blacklist_entry: BlacklistMatch) -> float:
         """Evaluate the match confidence score based on multiple factors"""
         score = INITIAL_SCORE
-        print("**********************", self.tenant.first_name)
+
         tenant_names = re.split(
             r"\s+", clean_string(self.tenant.first_name)
         ) + re.split(r"\s+", clean_string(self.tenant.last_name))
@@ -153,6 +153,11 @@ class ScreeningProcessor:
                         {
                             "name": entry.name,
                             "surname": entry.surname,
+                            "date_of_birth": entry.birth_date,
+                            "birth_country": entry.birth_country,
+                            "provider": entry.provider,
+                            "exclusion_score": entry.exclusion_score,
+                            "identification_number": entry.identification_number,
                             "match_score": match_score,
                             "classification": ai_assessment.get(
                                 "match_classification", "Probably Not Relevant"
@@ -175,12 +180,18 @@ class ScreeningProcessor:
                     {
                         "name": entry.name,
                         "surname": entry.surname,
+                        "date_of_birth": entry.birth_date,
+                        "birth_country": entry.birth_country,
+                        "provider": entry.provider,
+                        "exclusion_score": entry.exclusion_score,
+                        "identification_number": entry.identification_number,
                         "match_score": match_score,
                         "classification": classification,
                     }
                 )
 
-        print(json.dumps(results, indent=4))
+        print_screening_results(self.tenant, results)
+        # print(json.dumps(results, indent=4))
         return results
 
     @staticmethod
@@ -216,4 +227,6 @@ class ScreeningProcessor:
         allowed_blacklist_sources: List[str] = None,
     ):
         blacklist_entries = cls.extract_blacklist_matches(pipeline)
+
+        print_blacklist_entries(blacklist_entries)
         return cls(tenant, blacklist_entries, allowed_blacklist_sources)
