@@ -47,7 +47,7 @@ def test_exact_match(sample_tenant, sample_blacklist):
 
 def test_different_name_same_id(sample_tenant):
     blacklist = BlacklistMatch(
-        "Jake", "Smith", "1990-01-01", "USA", "Provider1", 90.0, ["12345"]
+        "Jake", "Smith", "1990-01-01", "USA", "Provider1-blacklist", 90.0, ["12345"]
     )
     processor = ScreeningProcessor(sample_tenant, [blacklist])
     assert processor.evaluate_without_ai(blacklist) <= 100.0
@@ -55,14 +55,14 @@ def test_different_name_same_id(sample_tenant):
 
 def test_missing_fields():
     tenant = Tenant("John", "Doe", None, None, [])
-    blacklist = BlacklistMatch("John", "Doe", "1990-01-01", None, "Provider1", 50.0, [])
+    blacklist = BlacklistMatch("John", "Doe", "1990-01-01", None, "Provider1-blacklist", 50.0, [])
     processor = ScreeningProcessor(tenant, [blacklist])
     assert processor.evaluate_without_ai(blacklist) >= 50.0
 
 
 def test_blacklist_source_filtering(sample_tenant):
     blacklist = BlacklistMatch(
-        "John", "Doe", "1990-01-01", "USA", "Provider2", 90.0, ["12345"]
+        "John", "Doe", "1990-01-01", "USA", "Provider2-blacklist", 90.0, ["12345"]
     )
     processor = ScreeningProcessor(
         sample_tenant, [blacklist], allowed_blacklist_sources=["Provider1"]
@@ -70,12 +70,12 @@ def test_blacklist_source_filtering(sample_tenant):
     assert len(processor.classify_matches(False)) == 0
 
     allowed_blacklist = BlacklistMatch(
-        "John", "Doe", "1990-01-01", "USA", "Provider1_blacklist", 90.0, ["12345"]
+        "John", "Doe", "1990-01-01", "USA", "Provider1-blacklist", 90.0, ["12345"]
     )
     processor_allowed = ScreeningProcessor(
         sample_tenant,
         [allowed_blacklist],
-        allowed_blacklist_sources=["Provider1_blacklist"],
+        allowed_blacklist_sources=["Provider1-blacklist"],
     )
     assert len(processor_allowed.classify_matches(False)) == 1
     assert (
@@ -94,7 +94,7 @@ def test_case_insensitivity(screening_processor):
 def test_partial_match():
     tenant = Tenant("Jon", "Do", "1990-01-01", "USA", ["12345"])
     blacklist = BlacklistMatch(
-        "John", "Doe", "1990-01-01", "USA", "Provider1", 70.0, ["12345"]
+        "John", "Doe", "1990-01-01", "USA", "Provider1-blacklist", 70.0, ["12345"]
     )
     processor = ScreeningProcessor(tenant, [blacklist])
     assert processor.evaluate_without_ai(blacklist) > 85.0
@@ -112,7 +112,7 @@ def test_different_date_formats(screening_processor):
 def test_special_character_names():
     tenant = Tenant("Jöhn", "Döe", "1990-01-01", "USA", ["12345"])
     blacklist = BlacklistMatch(
-        "John", "Doe", "1990-01-01", "USA", "Provider1", 80.0, ["12345"]
+        "John", "Doe", "1990-01-01", "USA", "Provider1-blacklist", 80.0, ["12345"]
     )
     processor = ScreeningProcessor(tenant, [blacklist])
     assert processor.evaluate_without_ai(blacklist) >= 85.0
@@ -121,7 +121,7 @@ def test_special_character_names():
 def test_blank_names():
     tenant = Tenant("", "", "1990-01-01", "USA", ["12345"])
     blacklist = BlacklistMatch(
-        "Jame", "Bane", "1990-01-01", "USA", "Provider1", 60.0, []
+        "Jame", "Bane", "1990-01-01", "USA", "Provider1-blacklist", 60.0, []
     )
     processor = ScreeningProcessor(tenant, [blacklist])
     assert processor.evaluate_without_ai(blacklist) <= 60.0
@@ -129,7 +129,7 @@ def test_blank_names():
 
 def test_different_nationality(sample_tenant):
     blacklist = BlacklistMatch(
-        "John", "Doe", "1990-01-01", "UK", "Provider1", 80.0, ["12345"]
+        "John", "Doe", "1990-01-01", "UK", "Provider1-blacklist", 80.0, ["12345"]
     )
     processor = ScreeningProcessor(sample_tenant, [blacklist])
     assert processor.evaluate_without_ai(blacklist) <= 100.0
@@ -141,7 +141,7 @@ def test_empty_blacklist_entries(sample_tenant):
 
 
 def test_missing_birth_date(sample_tenant):
-    blacklist = BlacklistMatch("John", "Doe", None, "USA", "Provider1", 75.0, ["12445"])
+    blacklist = BlacklistMatch("John", "Doe", None, "USA", "Provider1-blacklist", 75.0, ["12445"])
     processor = ScreeningProcessor(sample_tenant, [blacklist])
     assert processor.evaluate_without_ai(blacklist) > 50.0
 
@@ -149,7 +149,7 @@ def test_missing_birth_date(sample_tenant):
 def test_maximum_exclusion_score():
     tenant = Tenant("John", "Doe", "1990-01-01", "USA", ["12345"])
     blacklist = BlacklistMatch(
-        "John", "Doe", "1990-01-01", "USA", "Provider1", 100, ["12345"]
+        "John", "Doe", "1990-01-01", "USA", "Provider1-blacklist", 100, ["12345"]
     )
     processor = ScreeningProcessor(tenant, [blacklist])
     assert processor.evaluate_without_ai(blacklist) == 100
@@ -185,6 +185,7 @@ def test_evaluate_with_ai(mocker, sample_tenant, sample_blacklist):
     processor = ScreeningProcessor(sample_tenant, [sample_blacklist])
     response = processor.evaluate_with_ai(sample_blacklist)
 
+    assert isinstance(response, dict)
     assert response["ai_model_confidence_score"] == 85.0
     mock_generate_model_response.assert_called_once()
 
