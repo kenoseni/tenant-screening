@@ -14,7 +14,14 @@ client = OpenAI(api_key=api_key)
 
 
 def generate_model_response(prompt: str):
-    """Generate response from AI model using Ollama"""
+    """Generate response from AI model using Ollama
+
+    Args:
+        prompt (str): The user input prompt for tenant screening.
+
+    Returns:
+        dict: The parsed JSON response from the model, or an error response if generation fails.
+    """
     desired_model = config.get("AI_MODEL")
 
     try:
@@ -85,7 +92,9 @@ def generate_model_response_with_open_ai(prompt: str):
 
         ai_content = completion.choices[0].message.content
 
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>RESPONSE FROM CHAT GPT", ai_content)
+        print(
+            ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>RESPONSE FROM CHAT GPT", ai_content
+        )
 
         if ai_content:
             try:

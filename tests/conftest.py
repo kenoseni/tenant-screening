@@ -84,7 +84,6 @@ def sample_blacklist(sample_pipeline):
     return ScreeningProcessor.extract_blacklist_matches(sample_pipeline)
 
 
-
 @pytest.fixture
 def screening_processor(sample_tenant, sample_blacklist):
     return ScreeningProcessor(

@@ -3,7 +3,7 @@ from challenge.tenant import Tenant
 from challenge.utils import random_name, random_date, random_id
 from challenge.screening_processor import ScreeningProcessor
 
-# Generate 50 random tenants
+# Generate 3 or more random tenants
 tenants = [
     Tenant(
         first_name=random_name(),
@@ -17,7 +17,10 @@ tenants = [
 
 
 def generate_pipeline():
-    """Generates a sample pipeline for tenant screening."""
+    """Generates a sample pipeline for tenant screening.
+
+    IT SHOULD BE MODIFIED FOR THE ACTUAL PIPELINE DATA
+    """
 
     pipeline = [
         {

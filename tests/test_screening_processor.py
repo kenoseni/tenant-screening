@@ -8,11 +8,18 @@ def test_screening_processor_initialization(
 ):
     assert screening_processor.tenant == sample_tenant
     assert screening_processor.blacklist_entries == sample_blacklist
-    assert screening_processor.allowed_blacklist_sources == ["ProviderX_blacklist", "ProviderY_blacklist"]
+    assert screening_processor.allowed_blacklist_sources == [
+        "ProviderX_blacklist",
+        "ProviderY_blacklist",
+    ]
 
     assert isinstance(screening_processor, ScreeningProcessor)  # Verify object type
-    assert len(screening_processor.blacklist_entries) == len(sample_blacklist)  # Check length consistency
-    assert screening_processor.tenant.first_name == sample_tenant.first_name  # Validate tenant details
+    assert len(screening_processor.blacklist_entries) == len(
+        sample_blacklist
+    )  # Check length consistency
+    assert (
+        screening_processor.tenant.first_name == sample_tenant.first_name
+    )  # Validate tenant details
     assert screening_processor.tenant.last_name == sample_tenant.last_name
     assert screening_processor.tenant.birth_date == sample_tenant.birth_date
     assert screening_processor.tenant.nationality == sample_tenant.nationality
@@ -62,10 +69,19 @@ def test_blacklist_source_filtering(sample_tenant):
     )
     assert len(processor.classify_matches(False)) == 0
 
-    allowed_blacklist = BlacklistMatch("John", "Doe", "1990-01-01", "USA", "Provider1_blacklist", 90.0, ["12345"])
-    processor_allowed = ScreeningProcessor(sample_tenant, [allowed_blacklist], allowed_blacklist_sources=["Provider1_blacklist"])
+    allowed_blacklist = BlacklistMatch(
+        "John", "Doe", "1990-01-01", "USA", "Provider1_blacklist", 90.0, ["12345"]
+    )
+    processor_allowed = ScreeningProcessor(
+        sample_tenant,
+        [allowed_blacklist],
+        allowed_blacklist_sources=["Provider1_blacklist"],
+    )
     assert len(processor_allowed.classify_matches(False)) == 1
-    assert processor_allowed.classify_matches(False)[0]["classification"] == "Relevant Match"
+    assert (
+        processor_allowed.classify_matches(False)[0]["classification"]
+        == "Relevant Match"
+    )
 
 
 def test_case_insensitivity(screening_processor):

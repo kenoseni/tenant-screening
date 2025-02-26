@@ -18,8 +18,7 @@ if __name__ == "__main__":
                 "Provider3-blacklist",
                 "Provider4-blacklist",
                 "Provider5-blacklist",
-                "refinitiv-blacklist"
-
+                "refinitiv-blacklist",
             ],
         )
         # Pass False to use manual algorithm
