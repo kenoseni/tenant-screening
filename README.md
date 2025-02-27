@@ -114,7 +114,7 @@ screening_processor.classify_matches(False)
 
 ## Sample Input Data
 
-Try this example to test immediately:
+Try this example to test immediately. This data can be found in the data directory:
 
 ```python
 # Example tenants
@@ -145,6 +145,22 @@ pipeline = [
         }
     }
 ]
+```
+
+## Example with filter_type specified
+
+```python
+screening_processor = ScreeningProcessor.from_pipeline(
+    tenant, pipeline, allowed_blacklist_sources, "refinitiv-blacklist"
+)
+```
+
+## Example without filter_type (uses default)
+
+```python
+screening_processor = ScreeningProcessor.from_pipeline(
+    tenant, pipeline, allowed_blacklist_sources
+)
 ```
 
 ## Generate Random Input Data For Testing
