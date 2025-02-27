@@ -10,7 +10,11 @@ from challenge.model import (
     generate_model_response,
     generate_model_response_with_open_ai,
 )
-from challenge.utils import clean_string, print_screening_results, print_blacklist_entries
+from challenge.utils import (
+    clean_string,
+    print_screening_results,
+    print_blacklist_entries,
+)
 
 # Constants
 INITIAL_SCORE = 0.0
@@ -142,6 +146,11 @@ class ScreeningProcessor:
                 self.allowed_blacklist_sources
                 and entry.provider not in self.allowed_blacklist_sources
             ):
+                print(
+                    "IIIIIIII GGGGOOOOOTTTTTT HHHHEEEEERRRRREEEEE",
+                    self.allowed_blacklist_sources,
+                    entry.provider,
+                )
                 continue
             if use_ai:
                 ai_assessment = self.evaluate_with_ai(entry) or {}
@@ -195,12 +204,14 @@ class ScreeningProcessor:
         return results
 
     @staticmethod
-    def extract_blacklist_matches(pipeline: List[Dict]) -> List[BlacklistMatch]:
+    def extract_blacklist_matches(
+        pipeline: List[Dict], filter_type="refinitiv-blacklist"
+    ) -> List[BlacklistMatch]:
         """Extract blacklist matches from the pipeline step dynamically"""
 
         blacklist_entries = []
         for step in pipeline:
-            if step.get("type", "").endswith("blacklist"):
+            if step.get("type") == filter_type:
                 result = step.get("result", {}).get("data", {})
                 if result.get("found", False):
                     for match in result.get("matches", []):
@@ -225,8 +236,12 @@ class ScreeningProcessor:
         tenant: Tenant,
         pipeline: List[Dict],
         allowed_blacklist_sources: List[str] = None,
+        filter_type: str = None,
     ):
-        blacklist_entries = cls.extract_blacklist_matches(pipeline)
+        if filter_type:
+            blacklist_entries = cls.extract_blacklist_matches(pipeline, filter_type)
+        else:
+            blacklist_entries = cls.extract_blacklist_matches(pipeline)
 
         print_blacklist_entries(blacklist_entries)
         return cls(tenant, blacklist_entries, allowed_blacklist_sources)

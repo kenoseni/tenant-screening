@@ -24,7 +24,9 @@ def generate_pipeline():
 
     pipeline = [
         {
-            "type": f"provider{random.randint(1, 5)}_blacklist",
+            "type": random.choice(
+                [f"provider{random.randint(1, 5)}-blacklist", "refinitiv-blacklist"]
+            ),
             "result": {
                 "data": {
                     "found": random.choice([True, True]),

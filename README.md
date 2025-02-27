@@ -22,7 +22,7 @@ This project is an AI-driven prospective tenant screening system that evaluates 
 
 ## Installation
 
-Ensure you have Python installed (preferably Python 3.11+). Then, install the required dependencies:
+Ensure you have Python `3.11+` installed. Then, install the required dependencies:
 
 create a virtual environment
 
@@ -97,20 +97,57 @@ ollama list
 
 ## Manual Testing
 
-The dataset can be manipulated to test various scenarios
+1. **Prepare Input Data**: Use the sample below or modify tenants and pipeline in `generate_test_data.py`.
+2. **Run the Screening**:
 
 ```sh
 python main.py
-
 ```
 
-to test without using the LLM model(manual classification) pass False to the classify_matches method in `main.py`
+3. **View Results**: Check the terminal for tenant details, pipeline results, and classifications.
+
+**Note**: to test without using the LLM model(manual classification) pass False to the classify_matches method in `main.py`
 
 ```python
 screening_processor.classify_matches(False)
 ```
 
-## Input Data For Testing
+## Sample Input Data
+
+Try this example to test immediately:
+
+```python
+# Example tenants
+tenants = [
+    Tenant("John", "Doe", "1990-01-01", "USA", ["12345"]),
+    Tenant("Jane", "Smith", "1985-02-02", "UK", ["67890"])
+]
+
+# Example pipeline
+pipeline = [
+    {
+        "type": "refinitiv-blacklist",
+        "result": {
+            "data": {
+                "found": True,
+                "matches": [
+                    {
+                        "name": "John",
+                        "surname": "Doe",
+                        "birthDate": "1990-01-01",
+                        "birthCountry": "USA",
+                        "providerId": "ProviderX",
+                        "exclusionMatchScore": 90,
+                        "identificationNumber": ["12345"]
+                    }
+                ]
+            }
+        }
+    }
+]
+```
+
+## Generate Random Input Data For Testing
 
 Any test data can be used to test this application. The `tenant` data and `pipeline` data in the `generate_test_data` file can can be substituted with any other test data
 
