@@ -18,6 +18,7 @@ setup(
         "ollama",
         "python-dotenv",
         "pytest-mock",
+        "openai"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

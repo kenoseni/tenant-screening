@@ -146,11 +146,11 @@ class ScreeningProcessor:
                 self.allowed_blacklist_sources
                 and entry.provider not in self.allowed_blacklist_sources
             ):
-                print(
-                    "IIIIIIII GGGGOOOOOTTTTTT HHHHEEEEERRRRREEEEE",
-                    self.allowed_blacklist_sources,
-                    entry.provider,
-                )
+                # print(
+                #     "IIIIIIII GGGGOOOOOTTTTTT HHHHEEEEERRRRREEEEE",
+                #     self.allowed_blacklist_sources,
+                #     entry.provider,
+                # )
                 continue
             if use_ai:
                 ai_assessment = self.evaluate_with_ai(entry) or {}
